@@ -1,0 +1,29 @@
+{
+  "name": "JasmineMat",
+  "mesh": "sphere",
+  "brief": "dense flowering jasmine mat creeping from outside",
+  "ok": true,
+  "intent_mode": "organic_outside",
+  "growth_mode": "organic",
+  "leaf_species": ["Trachelospermum_jasminoides"],
+  "_autofit_scale": 1.732,
+  "_target_diag_m": 10.392,
+  "budget": 22225,
+  "n_attractors": 16000,
+  "base_r": 0.0831,
+  "uv_layers": ["UVMap", "wipe", "dx", "dy", "dz"],
+  "wpo_mb": 103.2,
+  "dx_range": [-19.41, 19.5],
+  "dz_range": [-19.51, 19.18],
+  "verify": "PASS",
+  "textures": [
+    "bark_color.jpg",
+    "bark_normal.jpg",
+    "bark_roughness.jpg",
+    "fb_trachelospermum_jasminoides_flower_001_card.png",
+    "fb_trachelospermum_jasminoides_leaf_001_card.png",
+    "fb_trachelospermum_jasminoides_leaf_002_card.png",
+    "fb_trachelospermum_jasminoides_leaf_003_card.png"
+  ],
+  "fbx": "out/jasmine_mat/JasmineMat_wpo.fbx"
+}

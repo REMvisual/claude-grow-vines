@@ -1,0 +1,15 @@
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.env
+.env.*
+__pycache__/
+*.pyc
+# bark PBR sets are fetched by scripts/fetch_assets.py (ambientCG, CC0)
+skills/grow-vines/scripts/assets/bark/*/
+# local test output
+skills/grow-vines/scripts/plantgen/hero_out/
+skills/grow-vines/scripts/plantgen/rnd/vines/renders/
+skills/grow-vines/scripts/plantgen/rnd/trees/out/

@@ -1,0 +1,42 @@
+{
+  "_doc": "Reference for the contextual growth recipes intent_map.py produces. The brief selects a mode; grow_vine.autofit() rescales budget/attractors/base_r/growth_dz to the mesh bbox (params here are tuned for a ~6 m target). Edit intent_map.BASE to change defaults.",
+  "modes": {
+    "organic_outside": {
+      "trigger": "default; 'creeping mat from outside', 'overgrown', 'ground-cover'",
+      "growth_mode": "organic",
+      "seed_origin": "perimeter (outside the mesh), verified outside",
+      "feel": "vine creeps in from beyond the silhouette and mats over the surface"
+    },
+    "organic_inside": {
+      "trigger": "'from inside', 'from the surface', 'sprouting/erupting out of the mesh'",
+      "growth_mode": "organic",
+      "seed_origin": "on-surface scatter seeds (scatter_seeds high, n_seeds low)",
+      "feel": "vine emerges from the mesh surface itself"
+    },
+    "climb": {
+      "trigger": "'climbing', 'vertical', 'rising from the base/bottom', 'bold columns'",
+      "growth_mode": "climb",
+      "seed_origin": "bottom edge, moderate upward bias",
+      "feel": "bold statement vines climbing upward"
+    },
+    "vortex": {
+      "trigger": "'spiral', 'vortex', 'swirl', 'winding into a point/eye'",
+      "growth_mode": "vortex",
+      "seed_origin": "spiral arm mouths winding into the centre",
+      "feel": "structured logarithmic-spiral swirl"
+    }
+  },
+  "modifiers": {
+    "density": {"sparse|minimal|few|light": "x0.6 budget/attractors", "dense|lush|overgrown|heavy|full": "x1.4-1.5 budget/attractors"},
+    "thickness": {"fine|wire|thin|delicate": "base_r x0.6", "bold|thick|chunky|statement": "base_r x1.6"},
+    "flowers": {"flower|bloom|blossom": "flower_prob>=0.25", "no flower|foliage only": "flower_prob=0"}
+  },
+  "leaf_species": {
+    "grape": ["Vitis_vinifera"], "ivy": ["Hedera_helix", "Hedera_colchica"],
+    "jasmine": ["Trachelospermum_jasminoides"], "fig": ["Ficus_pumila"],
+    "wire": ["Muehlenbeckia_complexa"], "clematis": ["Clematis"],
+    "wisteria": ["Wisteria_sinensis"], "honeysuckle": ["Lonicera"],
+    "hops": ["Humulus_lupulus"], "rose": ["Rosa"], "bougainvillea": ["Bougainvillea"]
+  },
+  "note": "Leaf species require the BagaIvy Blender addon to be installed (it is the leaf-card source library). Bark sets live in scripts/assets/bark/."
+}

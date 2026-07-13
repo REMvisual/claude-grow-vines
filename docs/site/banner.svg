@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" width="800" height="400">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0A0A0A"/><stop offset="100%" stop-color="#0D1410"/>
+    </linearGradient>
+    <linearGradient id="stem" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0%" stop-color="#5B21B6"/><stop offset="55%" stop-color="#7C3AED"/><stop offset="100%" stop-color="#4ADE80"/>
+    </linearGradient>
+    <filter id="tg"><feGaussianBlur in="SourceGraphic" stdDeviation="4"/><feColorMatrix type="matrix" values="0 0 0 0 .486 0 0 0 0 .228 0 0 0 0 .929 0 0 0 .35 0"/></filter>
+    <filter id="sg"><feGaussianBlur in="SourceGraphic" stdDeviation="6"/><feColorMatrix type="matrix" values="0 0 0 0 .29 0 0 0 0 .87 0 0 0 0 .5 0 0 0 .4 0"/></filter>
+  </defs>
+  <rect width="800" height="400" fill="url(#bg)"/>
+  <g stroke="#7C3AED" stroke-opacity=".04" stroke-width=".5">
+    <line x1="0" y1="120" x2="800" y2="120"/><line x1="0" y1="160" x2="800" y2="160"/>
+    <line x1="0" y1="260" x2="800" y2="260"/><line x1="0" y1="300" x2="800" y2="300"/>
+  </g>
+
+  <!-- growth axis: 0 -> 1 -->
+  <line x1="120" y1="330" x2="680" y2="330" stroke="#333" stroke-width="1"/>
+  <text x="120" y="352" text-anchor="middle" font-family="'JetBrains Mono','Consolas',monospace" font-size="12" fill="#666">0</text>
+  <text x="680" y="352" text-anchor="middle" font-family="'JetBrains Mono','Consolas',monospace" font-size="12" fill="#666">1</text>
+  <text x="400" y="352" text-anchor="middle" font-family="'JetBrains Mono','Consolas',monospace" font-size="12" fill="#7C3AED" fill-opacity=".8" letter-spacing="1">GrowthFront</text>
+
+  <!-- the vine: one stem growing along the axis, unfurling -->
+  <path d="M120,330 C180,325 200,290 250,285 S330,305 380,280 S450,225 500,230 S580,255 620,215 S660,160 685,150"
+        fill="none" stroke="url(#stem)" stroke-width="5" stroke-linecap="round" filter="url(#sg)"/>
+  <path d="M120,330 C180,325 200,290 250,285 S330,305 380,280 S450,225 500,230 S580,255 620,215 S660,160 685,150"
+        fill="none" stroke="url(#stem)" stroke-width="3" stroke-linecap="round"/>
+  <!-- leaves: sparse violet at the root -> dense green at the tip -->
+  <g fill="#7C3AED" opacity=".55">
+    <ellipse cx="215" cy="296" rx="9" ry="4.5" transform="rotate(-30 215 296)"/>
+    <ellipse cx="290" cy="288" rx="10" ry="5" transform="rotate(20 290 288)"/>
+  </g>
+  <g fill="#34D399" opacity=".7">
+    <ellipse cx="410" cy="268" rx="11" ry="5.5" transform="rotate(-25 410 268)"/>
+    <ellipse cx="470" cy="234" rx="11" ry="5.5" transform="rotate(15 470 234)"/>
+    <ellipse cx="530" cy="234" rx="12" ry="6" transform="rotate(-15 530 234)"/>
+  </g>
+  <g fill="#4ADE80">
+    <ellipse cx="590" cy="238" rx="12" ry="6" transform="rotate(30 590 238)"/>
+    <ellipse cx="625" cy="205" rx="13" ry="6.5" transform="rotate(-35 625 205)"/>
+    <ellipse cx="650" cy="180" rx="12" ry="6" transform="rotate(25 650 180)"/>
+    <ellipse cx="672" cy="158" rx="11" ry="5.5" transform="rotate(-40 672 158)"/>
+  </g>
+  <circle cx="685" cy="150" r="4" fill="#FFF"/>
+  <circle cx="685" cy="150" r="9" fill="none" stroke="#4ADE80" stroke-opacity=".5"/>
+
+  <text x="400" y="80" text-anchor="middle" font-family="'Segoe UI',sans-serif" font-size="64" font-weight="700" fill="#7C3AED" fill-opacity=".3" letter-spacing="2" filter="url(#tg)">grow-vines</text>
+  <text x="400" y="80" text-anchor="middle" font-family="'Segoe UI',sans-serif" font-size="64" font-weight="700" fill="#FFF" letter-spacing="2">grow-vines</text>
+  <text x="400" y="114" text-anchor="middle" font-family="'Segoe UI',sans-serif" font-size="16" fill="#7C3AED" fill-opacity=".65" letter-spacing="3">MESH + BRIEF -&gt; GROWING VINE</text>
+
+  <g fill="#7C3AED" opacity=".3"><circle cx="30" cy="30" r="2"/><circle cx="770" cy="30" r="2"/><circle cx="30" cy="370" r="2"/><circle cx="770" cy="370" r="2"/></g>
+  <text x="24" y="388" font-family="'Segoe UI',sans-serif" font-size="13" fill="#444455" letter-spacing=".5">REMrepo</text>
+  <text x="776" y="388" text-anchor="end" font-family="'Segoe UI',sans-serif" font-size="13" fill="#444455" letter-spacing=".5">Claude Code Skill</text>
+  <line x1="0" y1="398" x2="800" y2="398" stroke="#7C3AED" stroke-opacity=".15" stroke-width="2"/>
+</svg>
