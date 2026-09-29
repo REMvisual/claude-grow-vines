@@ -7,10 +7,7 @@ Writes baga_asset_manifest.json + baga_asset_manifest.md in this folder.
 import bpy, os, json, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DB = os.path.join(os.environ.get("BAGAIVY_DIR", ""), "BagaIvy_AssetsDatabase.blend")
-if not os.path.isfile(DB):
-    DB = os.path.join(bpy.utils.user_resource('SCRIPTS', path="addons"),
-                      "BagaIvy", "BagaIvy_AssetsDatabase.blend")
+DB = os.environ.get("BAGAIVY_DB", os.path.join(os.environ.get("BAGAIVY_DIR", ""), r"BagaIvy_AssetsDatabase.blend"))  # BagaIvy addon folder via BAGAIVY_DIR
 def P(*a): print("[AUDIT]", *a, flush=True)
 
 # ---- 1) get every object name in the library

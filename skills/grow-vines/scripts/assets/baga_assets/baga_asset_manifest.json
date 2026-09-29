@@ -1,5 +1,5 @@
 {
- "db_path": "<Blender addons>/BagaIvy/BagaIvy_AssetsDatabase.blend",
+ "db_path": "<BAGAIVY_DIR>\\BagaIvy_AssetsDatabase.blend",
  "total_objects": 354,
  "category_counts": {
   "leaf": 166,

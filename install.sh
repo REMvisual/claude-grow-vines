@@ -3,7 +3,7 @@ set -euo pipefail
 
 # claude-grow-vines installer
 # Usage: curl -fsSL https://raw.githubusercontent.com/REMvisual/claude-grow-vines/main/install.sh | bash
-# Pin version: curl -fsSL https://raw.githubusercontent.com/REMvisual/claude-grow-vines/v1.0.0/install.sh | bash -s -- v1.0.0
+# Pin version: curl -fsSL https://raw.githubusercontent.com/REMvisual/claude-grow-vines/v1.1.0/install.sh | bash -s -- v1.1.0
 
 REPO="REMvisual/claude-grow-vines"
 SKILL_NAME="grow-vines"

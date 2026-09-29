@@ -23,7 +23,9 @@ grow-vines bakes the entire growth animation into UV channels on a plain static 
 - **Space-colonization growth**, surface-constrained to the target mesh.
 - **5-UV static FBX export** — `UVMap, wipe, dx, dy, dz` — that reveals and unfurls from a single `GrowthFront` 0-1 scalar. No skeleton, no cache, Nanite-friendly.
 - **Baked bark + leaf PBR textures** per run.
-- **Parameterized Unreal master materials** (`M_Vine_Leaf`, `M_Vine_Bark`, UE 5.7) with the WPO + opacity-reveal graph already wired.
+- **Parameterized Unreal master materials** (`M_Vine_Leaf`, `M_Vine_Bark`, UE 5.8) with the WPO + opacity-reveal graph already wired, driven by a Material Parameter Collection (`MPC_Vines`).
+- **Drop-in Unreal controller Blueprint** (`BP_VineController`): auto-plays growth (once / loop / ping-pong, live Duration and Speed), switches between full-stage vines by index, or grows random clusters of 2-4 smaller vines that re-roll every cycle. Previews in the editor without pressing Play.
+- **Scripted Unreal ingest** over Epic's ModelContextProtocol plugin: mesh + Nanite + textures + one material instance per slot, batch placement into the open level, and a headless 5-UV verify.
 - **Self-verifying, plus an independent check.** Every run reimports its own export to verify; a separate `verify_wpo_independent.py` script confirms the FBX without trusting the gate.
 - **Works without any paid assets.** If the optional BagaIvy addon is absent, a procedural leaf-card generator synthesizes stylized leaf and flower cards per species.
 - **Deterministic headless runs.** One isolated Blender per vine, `--factory-startup`, `PYTHONHASHSEED=0`. No live Blender or Unreal connection required for generation.
@@ -97,14 +99,41 @@ See the `examples/` directory for a complete run walkthrough (`example-run.md`) 
 
 ## Unreal Deployment
 
-Condensed from [unreal/IMPORT.md](skills/grow-vines/unreal/IMPORT.md):
+Two phases: grow the vines (Blender, above), then "open Unreal" and ingest. Full steps in
+[unreal/IMPORT.md](skills/grow-vines/unreal/IMPORT.md); controller design, the full/small
+density rule and the gotchas in [reference/UE_VINE_CONTROLLER.md](skills/grow-vines/reference/UE_VINE_CONTROLLER.md)
+and [reference/LESSONS.md](skills/grow-vines/reference/LESSONS.md).
 
-1. Copy `unreal/Content/VineWPO/` (`M_Vine_Leaf`, `M_Vine_Bark`) into your project's `Content/`. Authored in UE 5.7 — re-save from your engine if the `.uasset`s won't load.
-2. Import `vine_<name>_wpo.fbx` with **Offset Uniform Scale = 100** (UE 5.5+ Interchange) so it lands in centimetres matching the baked deltas. Enable **Nanite**; keep all 5 UV channels.
-3. Import the run's `tex/*`. On the `_rgba` textures, keep the alpha channel (BC7/Masks — do not tick "Compress Without Alpha").
-4. Make Material Instances per vine. **The leaf `Color` must be the packed `*_leaf_color_rgba.png`** (RGB = colour, A = leaf cutout) — the material masks via `Color.A`, and a non-RGBA map yields square leaf cards.
-5. On the mesh component, tick **Evaluate World Position Offset** and set a WPO Disable Distance.
-6. Drive it: make a Material Instance Dynamic and set `GrowthFront` each frame — 0 to 1 grows, 1 to 0 ungrows, any value scrubs. Tune with `GrowWindow` (~0.12), `SoftBand` (~0.03), `WPOScale` (1.0).
+What ships in `unreal/Content/` (UE 5.8; copy both folders at exactly these paths, the `.uasset`
+files embed their package path):
+
+| Path | What |
+|---|---|
+| `VineWPO/M_Vine_Leaf`, `VineWPO/M_Vine_Bark` | masters, `GrowthFront = instance x collection`, plus tiny default textures so they compile stand-alone |
+| `PFG/MPC_Vines` | Material Parameter Collection driving every vine at once |
+| `PFG/BP_VineController` | the switcher / auto-player |
+
+Scripted path (editor open, Epic's ModelContextProtocol plugin listening on port 8001):
+
+```
+set VINES_DIR=<folder of vine folders>   set VINES_UE_ROOT=/Game/PFG/Vines   set VINES_PREFIX=PFG_
+python skills/grow-vines/scripts/unreal/ue_import_live.py --dry   # review the slot -> texture map
+python skills/grow-vines/scripts/unreal/ue_import_live.py         # mesh + Nanite + textures + one MIC per slot
+python skills/grow-vines/scripts/unreal/ue_place.py 1 5           # place a batch + the controller into the open level
+python skills/grow-vines/scripts/unreal/ue_place.py --save
+```
+
+Manual path: import the FBX with **Offset Uniform Scale = 100**, Nanite on, keep all 5 UV
+channels; leaf `Color` must be the packed `*_rgba.png` (alpha = cutout); one material instance
+per slot; tick **Evaluate World Position Offset** on the component; then either place
+`BP_VineController` or write `MPC_Vines.GrowthFront` yourself (0 to 1 grows, 1 to 0 ungrows,
+any value scrubs).
+
+Controller controls (Details panel, category Vines): `ActiveIndex` / `NextVine` / `PrevVine`
+over the full-stage list, `RandomMode` for 2-4 random smaller vines with a new set every cycle,
+`LoopMode` (once / loop / ping-pong), `Duration`, `Speed`, `ResetNow`, `NewRandomSet`, `ShowAll`,
+`MaterialOverride`. Public functions for Sequencer or OSC: `SetVine`, `PlayGrowth`, `StopGrowth`,
+`ResetGrowth`, `ResetSim`, `PickRandomSet`.
 
 Full shader math: [reference/UE_VINE_WIPE_SHADER.md](skills/grow-vines/reference/UE_VINE_WIPE_SHADER.md).
 
@@ -123,7 +152,9 @@ Full shader math: [reference/UE_VINE_WIPE_SHADER.md](skills/grow-vines/reference
 
 ## Roadmap
 
-- **v2: Unreal vine-switcher controller Blueprint** — a drop-in actor exposing Grow / Ungrow / Speed / Loop and per-vine switching over the `GrowthFront` scalar (UMG- and OSC-drivable), so multiple vines can be managed and cross-faded without material bookkeeping.
+- Wire `SoftBand` / `GrowWindow` / `WPOScale` from the collection as well (today only `GrowthFront` is collection-driven).
+- Real "Call In Editor" buttons on the controller once the authoring tooling can set them (today `ResetNow` / `NewRandomSet` are self-clearing tick-boxes).
+- A UMG panel over the controller's public functions.
 
 ## Uninstall
 

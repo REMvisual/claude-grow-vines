@@ -1,6 +1,6 @@
 # BagaIvy Asset Database — Audit Manifest
 
-**DB:** `<Blender addons>/BagaIvy/BagaIvy_AssetsDatabase.blend`
+**DB:** `<BAGAIVY_DIR>\BagaIvy_AssetsDatabase.blend`
 **Total objects:** 354
 **Species:** 60
 **Categories:** leaf=166, flower=161, fruit=27, other=0

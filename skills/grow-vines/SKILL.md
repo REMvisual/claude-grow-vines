@@ -1,12 +1,22 @@
 ---
 name: grow-vines
-description: Grow a UE-ready WPO-wipe vine over any mesh from a natural-language brief. Given a mesh (OBJ/FBX/glTF or a primitive) and a brief like "dense ivy mat creeping from outside" / "bold climbers from the base" / "a spiral vortex into the front", it grows a vine via space colonization, bakes bark+leaf PBR textures, and exports a 5-UV static FBX (UVMap, wipe, dx, dy, dz) that reveals + unfurls from a single GrowthFront 0-1 scalar — plus the parameterized Unreal materials to deploy it. Triggers on "grow vines", "grow a vine on this mesh", "vine over X", "make a growing vine", "WPO vine", "GrowthFront vine".
+description: Grow a UE-ready WPO-wipe vine over any mesh from a natural-language brief. Given a mesh (OBJ/FBX/glTF or a primitive) and a brief like "dense ivy mat creeping from outside" / "bold climbers from the base" / "a spiral vortex into the front", it grows a vine via space colonization, bakes bark+leaf PBR textures, and exports a 5-UV static FBX (UVMap, wipe, dx, dy, dz) that reveals + unfurls from a single GrowthFront 0-1 scalar — plus the parameterized Unreal materials to deploy it. Triggers on "grow vines", "grow a vine on this mesh", "vine over X", "make a growing vine", "WPO vine", "GrowthFront vine" — and, once vines exist, on "open Unreal", "ingest / import the vines into Unreal", "vine controller", "switch between vines", "grow them in the level", "the BP for the vines".
 ---
 
 # grow-vines
 
 Turns a **mesh + a natural-language brief** into a deployable growing vine. The brief is the
 control surface — it picks where the vine starts and how it spreads.
+
+## The pipeline (two phases, one hand-off)
+| Phase | User says | You do | Done when |
+|---|---|---|---|
+| 1 Grow | "grow vines on X", "prompt the trees", "20 vines for the set" | run `grow_vine.py` once per vine (headless Blender), independent verify | one folder per vine with `<name>_wpo.fbx`, `tex/`, `wpo_compliance.json` PASS |
+| 2 Ingest | "open Unreal", "ingest / import the vines", "here's the BP" | **Deploy in Unreal** below: content folders in → `ue_import_live.py` → `ue_verify.py` → `ue_place.py` in batches of 5 (user checks, then `--save`) → set the controller's Full/Small lists | all vines in the open level, `BP_VineController_1` switching and growing them, level saved |
+
+Phase 2 needs a running UE 5.8 editor with Epic's ModelContextProtocol plugin (port 8001);
+phase 1 needs no Unreal. Read `reference/LESSONS.md` before either phase on a multi-piece set
+(stage, floor + panels) — the defaults assume one wall-like mesh.
 
 ## Prerequisites
 - **Blender 4.2+** (developed and verified on 5.1) run headless, e.g.
@@ -65,11 +75,24 @@ The run self-verifies by reimport, but to confirm independently:
 Expect `INDEP_VERIFY: PASS` — exactly 5 UV layers and `dx/dz` ranges of ±(tens of cm), i.e.
 real unfurl deltas, not zeros.
 
-## Deploy in Unreal
-`unreal/Content/VineWPO/` ships the parameterized masters **`M_Vine_Leaf`** and
-**`M_Vine_Bark`** (UE 5.7). Per vine, make Material Instances, set `Color/Normal/Roughness`
-to the baked maps, import the FBX at **Offset Uniform Scale 100** with Nanite, and drive
-`GrowthFront` 0→1. Full steps: `unreal/IMPORT.md`. Shader reference: `reference/UE_VINE_WIPE_SHADER.md`.
+## Deploy in Unreal (phase 2)
+`unreal/Content/` ships a ready-to-go set (UE 5.8): masters **`M_Vine_Leaf`** / **`M_Vine_Bark`**
+(`VineWPO/`, `GrowthFront = instance x collection`), the collection **`MPC_Vines`** and the
+switcher/auto-player **`BP_VineController`** (`PFG/`). In order:
+1. Copy `unreal/Content/VineWPO/` and `unreal/Content/PFG/` into the project **at those paths**.
+2. Editor open, MCP listening: tell the user you are about to touch assets, then
+   `python scripts/unreal/ue_import_live.py --dry` (slot→texture map) and without `--dry`
+   (mesh + Nanite + textures + one MIC per slot, saved per vine). Env: `VINES_DIR` (folder of
+   vine folders), `VINES_UE_ROOT` (`/Game/...` destination), `VINES_PREFIX` (folder prefix; folders
+   are `<PREFIX><NN>_<Name>`, vine number NN drives the batches, `Vines` array is 0-based).
+3. `ue_verify.py` headless (5 UV sets, Nanite, every slot bound) — read the JSON, not the exit code.
+4. Ask which level is open; `python scripts/unreal/ue_place.py 1 5`, stop, user checks, then
+   `--save` (saves the open level) and the next five. The controller is placed with the first batch.
+5. On `BP_VineController_1` set `FullIndices` (full-stage vines) and `SmallIndices` (smaller
+   vines) — see the density rule in `reference/UE_VINE_CONTROLLER.md` §3.
+6. Hand over the controls: `unreal/IMPORT.md` "Controller cheat-sheet".
+Rebuild the Blueprint from source with `scripts/unreal/ue_bp_vinecontroller.py` if it must change.
+Gotchas that will bite: `reference/LESSONS.md`. Shader: `reference/UE_VINE_WIPE_SHADER.md`.
 
 ## Running as a subagent
 Self-contained: dispatch with the mesh path, the brief, and an output dir. Run the headless
